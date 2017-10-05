@@ -27,7 +27,9 @@ var app = {
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
-        DAO.getConnection();
+       // DAO.getConnection();
+       var patientDAO =  new PatientDA();
+       patientDAO.getPatients();
         this.receivedEvent('deviceready');
     },
 

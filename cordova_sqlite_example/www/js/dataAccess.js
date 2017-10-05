@@ -1,35 +1,48 @@
-var DAO =
+"use strict"; 
+
+class DataAccess
 {
-
- 
-    getConnection: function(){
-        var db = window.sqlitePlugin.openDatabase({name: 'demo.db', location: 'default'});
-        patientDAO.initialize(db);
-        patientDAO.getPatients(db);
+      
+    constructor(db)
+    {
+        this._db = db;
+        this.getConnection();
     }
-};
 
-var patientDAO = {
-        initialize: function(db)
+    getConnection()
+    {
+        this._db = window.sqlitePlugin.openDatabase({name: 'demo.db', location: 'default'});
+    }
+}
+
+class PatientDA extends DataAccess
+{
+     constructor(db)
+     {
+         super(db);
+         this.initialize();
+     }
+
+     initialize()
         {
-           db.transaction(function(tx) {
+           this._db.transaction(function(tx) {
                 tx.executeSql('CREATE TABLE IF NOT EXISTS Patients (name, score)');
                 //tx.executeSql('INSERT INTO Patients VALUES (?,?)', ['Alice', 101]);
                 //tx.executeSql('INSERT INTO Patients VALUES (?,?)', ['Betty', 202]);
             }, function(error) {
-                alert('Transaction ERROR: ' + error.message);
+                console.log('Transaction ERROR: ' + error.message);
             }, function() {
-                alert('Populated database OK');
+                console.log('Populated database OK');
             });
-        },
-        getPatients: function(db)
+        }
+        getPatients()
         {
-            db.transaction(function(tx) {
+            this._db.transaction(function(tx) {
                 tx.executeSql('SELECT count(*) AS mycount FROM Patients', [], function(tx, rs) {
-                alert('Record count (expected to be 2): ' + rs.rows.item(0).mycount);
+                console.log('Record count (expected to be 2): ' + rs.rows.item(0).mycount);
                 }, function(tx, error) {
                 console.log('SELECT error: ' + error.message);
                 });
             });
         }
-    }
+}
